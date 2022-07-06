@@ -1,0 +1,364 @@
+.header{
+    height: 105px;
+    font-size: 2rem ;
+}
+
+.header__navhome{
+    height: 70px;
+    margin: 0px;
+    padding: auto;
+    display: inline-block;
+}
+
+.header__navbar-pic{
+    float:left;
+}
+
+.header__navhome-img{
+    width: 55px;
+    height: 66px;
+    padding-top: 5px;
+}
+
+
+.header__navhome-link{
+    padding-top: 30px;
+    padding-bottom: 20px;
+    padding-left: 10px;
+    list-style: none;
+    display: inline-block;
+    font-size: 2rem;
+    color: rgb(197, 36, 36);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+
+.header__navbar{
+    background-color: rgb(179, 15, 15);
+    height: 35px;
+    display: flex;
+}
+
+.header__navbar-item{
+    margin: 0px auto; 
+    padding: 9.5px 10px 9.5px 10px;
+    cursor: pointer;
+
+}
+.header_navbar-item-top{
+    margin: 0px;
+}
+
+.header__navbar-item,
+.header__navbar-item-link{
+    list-style: none;
+    display: inline-block;
+    font-size: 1.563rem;
+    color:var(--white-color);
+    text-decoration: none;
+}
+
+.header__navbar-item:hover,
+.header__navbar-item-link:hover{
+    background-color: rgba(122, 19, 19, 0.5);
+}
+
+.header__navbar-item-link:active,
+.header__navbar-item:active{
+    color: rgb(88, 8, 8);
+}
+
+#container{
+    height: 580px;
+    width: 100%;
+}
+
+.container__button-left{
+    float: left;
+    font-size: 1.5rem;
+    font-weight: 550;
+    border: 1px solid rgb(149, 185, 186);
+    background-color: var(--white-color);
+    height: 580px;
+    padding-left: 0px;
+    width: 25%;
+}
+
+.container__button-left-list{
+    padding-left: 20px; ;
+    text-decoration: none;
+    list-style: none;
+    margin: 0;
+    cursor: pointer;
+    position: relative;
+    display: block;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.container__button-left-item{
+    padding-top: 8px;
+    padding-bottom: 8px;
+    display: block;
+
+}
+
+
+.container__button-left-item:hover{
+    text-decoration: underline;
+}
+
+.container__button-right-item:hover{
+    border: 1px solid rgb(149, 185, 186);
+}
+
+
+
+.container__button-right{
+    width: 45px;
+    height: 580px;
+    float: left;
+    border: 1px solid rgb(149, 185, 186);
+    border-left-color: aliceblue;
+    background-color: var(--white-color);
+}
+
+.container__button-right-list{
+    text-decoration: none;
+    list-style: none;
+    padding: 0px 14px 0px 14px;
+    margin-top: 0;
+    margin-bottom:0px;
+    cursor: pointer;
+}
+
+.container__button-right-item{
+    font-size: 1.5rem;
+    margin-top: 14px;
+    margin-bottom: 14px;
+}
+
+.container__map{
+    width: 75%;
+    position: relative;
+    border: 1px solid rgb(103, 198, 201);
+    height: 580px;
+    text-align:center;
+    display: block;
+    justify-content: center;
+    float: left ;
+}  
+
+/* #container_map2{
+    display: block;
+} 
+
+#container_map1{
+    display: block;
+}   */
+
+/* #container__map{
+    position: absolute;
+    border: 1px solid rgb(103, 198, 201);
+    height: 580px;
+    width: 100%;
+    text-align:center;
+    display: none;
+    justify-content: center;
+}  */
+
+#map1{
+    width:100%;
+    height: 580px;
+}
+
+
+
+
+#container__map-svg{
+    width: 100%;
+}
+/* maps đang đè lên button phải sửa lại */
+
+
+
+
+
+
+.map-dropdown {
+    display: none;
+    position: relative;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    
+  }
+
+
+
+/* .map-dropdown a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+} */
+
+.display-info-dropdown {
+    display: none;
+    position: relative;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+
+.display-info-dropdown label {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: inline-block;
+    margin: 0;
+}
+
+.display-info-dropdown p {
+    margin: 0;
+}
+
+.display-info-dropdown input {
+    margin: 4 4;
+
+}
+
+.search-info {
+    padding: 6px;
+    border: none;
+    display: inline-block;
+}
+
+.search-info.active {
+    background-color: #2196F3;
+    color: white;
+  }
+
+#search-list-container{
+    height: 225px;
+    overflow-y: scroll;
+    cursor: default;
+
+}
+#search-list-container ul {
+    /* text-decoration: underline; */
+    cursor: pointer;
+    list-style: none;
+}
+
+#search-list-container li:hover {
+    text-decoration: underline;
+}
+
+#search-list{
+    list-style: none;
+    padding-left: 10px;
+}
+
+#search-list a{
+    text-decoration: none;
+    color:black;
+    font-weight: 400;   
+}
+
+.search-container1{
+    display: none;
+    position: relative;
+}
+
+#search-text {
+    width: 150px;
+    height: 25px;
+    margin:0px 0px 5px 0px;
+}
+
+#list_districts{
+    display: none;
+}
+
+.note1{
+    display: none;
+    cursor: context-menu;
+    padding-top: 10px;
+    height: 150px;
+    width: 100%;
+}
+
+#note_province, #note_district{
+    padding-left: 0;
+    list-style: none;
+}
+
+
+.show {display:block;}
+
+.container__map-coordinate{
+    position: absolute;
+    bottom: 0px;
+    left: 0;
+    width: 150px;
+    height: 50px;
+    text-align: left;
+    font-weight: 550;
+    font-size: 1.4rem;
+    display: inline-block;
+    padding-left: 10px;
+}
+#pan{
+    position: absolute;
+    bottom: 50px;
+    right: 100px;
+    width: 300px;
+    height: 100px;
+    text-align: left;
+    font-weight: 550;
+    font-size: 1.4rem;
+    display: inline-block;
+    padding-left: 10px;
+}
+
+footer {
+    background: rgb(255, 255, 255);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.social i {
+    font-size: 20px;
+    margin-left: 20px;
+    cursor: pointer;
+    transition: 0.5s linear;
+    display: inline-block;
+}
+
+.social i:hover {
+    transform: scale(1.4);
+}
+
+footer .name p {
+    margin: 10px;
+    font-size: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+footer .social {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
