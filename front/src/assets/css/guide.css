@@ -1,0 +1,54 @@
+.guide-nav{
+    width: 20%;
+    float: left
+}
+
+.guide-content{
+    width: 80%;
+    float: left;
+}
+
+.guide-contents-tools{
+    display: block;
+}
+.guide-contents-maps{
+    display: none;
+}
+.guide-contents-search{
+    display: none;
+}
+
+table{
+    border: 2px solid forestgreen;
+    width: 90%;
+    height: 200px;
+}
+    
+th{
+border: 1px solid black;
+}
+
+td{
+text-align: center;
+}
+
+/* #header-tool{
+    width: 35%;
+} */
+
+#header-content{
+    width: 35%;
+}
+
+.table-header{
+    font-size: 20px;
+    height: 30px;
+}
+
+.table-content{
+    height: 45px;
+    font-size: 15px;
+}
+img{
+    height: 40px;
+}

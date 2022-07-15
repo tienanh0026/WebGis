@@ -2,7 +2,8 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 // const methodOverride = require('method-override')
-const { Pool, Client } = require('pg')
+const { Pool, Client } = require('pg');
+const { text } = require('body-parser');
 
 //khoi dong
 const app = express();
@@ -168,29 +169,135 @@ app.get('/api/get-geometry-vietnam/district', (req, res) => {
         })
     });
 
-app.get('/api/get-geometry-vietnam/commune', (req, res) => {
-
-    client.query(`select id_1 , name_1, id_2, name_2, id_3, name_3,type_3, st_assvg(geom)from vnm_adm3`, (err, result) => {
+app.post('/api/get-geometry-vietnam/district-new', (req,res) =>{
+    const {screen} = req.body;
+    console.log(screen)
+    var xmin = screen[0].x;
+    var xmax = screen[1].x;
+    var ymin = screen[0].y;
+    var ymax = screen[1].y;
+    var width = xmax - xmin;
+    var height = ymax - ymin;
+    var screen_extend = 1.5;
+    // var center_x = xmin + (xmax-xmin)/2;
+    // var center_y = ymax + (Math.abs(ymin-ymax)/2);
+    // if(scale > 5 && scale < 8){
+    //     screen_extend = 1.3;
+    // }
+    // else if (scale > 8 && scale < 11){
+    //     screen_extend = 1.4;
+    // }
+    // else if(scale > 11 && scale < 14){
+    //     screen_extend = 1.5;
+    // }
+    // else if(scale > 14 && scale < 16){
+    //     screen_extend = 1.6;
+    // }
+    // else if(scale > 16 && scale < 19){
+    //     screen_extend = 1.85;
+    // }
+    // else if(scale > 19){
+    //     screen_extend = 2.05;
+    // }
+    xmin = xmin - (screen_extend-1)*width;
+    xmax = xmax + (screen_extend-1)*width;
+    ymin = ymin - (screen_extend-1)*height;
+    ymax = ymax + (screen_extend-1)*height;
+    console.log('xmin:',xmin,' xmax: ',xmax,' screen_ex: ', screen_extend)
+    var text = '';
+    var a = text.concat('(ST_XMin(ST_Collect(geom))*15+(ST_XMax(ST_Collect(geom))-ST_XMin(ST_Collect(geom)))*15/2) >',xmin,
+    ' and (ST_XMin(ST_Collect(geom))*15+(ST_XMax(ST_Collect(geom))-ST_XMin(ST_Collect(geom)))*15/2) <',xmax,
+    ' and (ST_YMax(ST_Collect(geom))*-15-abs((ST_YMax(ST_Collect(geom))-ST_YMin(ST_Collect(geom))))*-15/2) >',ymin,
+    ' and (ST_YMax(ST_Collect(geom))*-15-abs((ST_YMax(ST_Collect(geom))-ST_YMin(ST_Collect(geom))))*-15/2) <',ymax)
+    var b= "select id_1,name_1,id_2, name_2,type_2,st_assvg(geom) from vnm_adm2 group by id_1,name_1,id_2,name_2,type_2,geom having ";
+    var c = b.concat(a)
+    console.log(c);
+    //console.log(c);
+    client.query(c, (err, result) => {
         if (err) {
 
             return console.error('Error running query', err)
         }
-        // var total = 0;
-        // for(var a = 0; a< result.rows.length;a++){
-        //     total+= result.rows[a].st_assvg.length;    
-        // }
-        // console.log("ban đầu: ",total)
-        // var new_svg1 = reduce_points(result.rows,0.0120716); // bởi vì phần phường ở các khu vực trung tâm bé quá nên filter sẽ để lộ ra khoảng trắng
-        // for(var a=0; a<result.rows.length;a++){
-        //     result.rows[a].st_assvg = new_svg1[a];
-        // }
-        // var total_filter =0;
-        // for(var a = 0; a< result.rows.length;a++){
-        //     total_filter+= result.rows[a].st_assvg.length;         
-        // }
-        // console.log("sau khi loại: ",total_filter)
+        res.json({screen_reduce: result.rows })
+        //console.log(result.rows.length)
+        //console.log(a)
+        //district_distance = avg_distance(result.rows)
+        })
+    });
+
+app.post('/api/get-geometry-vietnam/province-new', (req,res) =>{
+    const {screen} = req.body;
+    console.log(screen)
+    var xmin = screen[0].x;
+    var xmax = screen[1].x;
+    var ymin = screen[0].y;
+    var ymax = screen[1].y;
+    var width = xmax - xmin;
+    var height = ymax - ymin;
+    var screen_extend = 1.5;
+    // if(scale > 5 && scale < 8){
+    //     screen_extend = 1.3;
+    // }
+    // else if (scale > 8 && scale < 11){
+    //     screen_extend = 1.4;
+    // }
+    // else if(scale > 11 && scale < 14){
+    //     screen_extend = 1.5;
+    // }
+    // else if(scale > 14 && scale < 16){
+    //     screen_extend = 1.6;
+    // }
+    // else if(scale > 16 && scale < 19){
+    //     screen_extend = 1.7;
+    // }
+    // else if(scale > 19){
+    //     screen_extend = 1.9;
+    // }
+    xmin = xmin - (screen_extend-1)*width;
+    xmax = xmax + (screen_extend-1)*width;
+    ymin = ymin - (screen_extend-1)*height;
+    ymax = ymax + (screen_extend-1)*height;
+    console.log('xmin:',xmin,' xmax: ',xmax,' screen_ex: ', screen_extend)
+    // var center_x = xmin + (xmax-xmin)/2;
+    // var center_y = ymax + (Math.abs(ymin-ymax)/2);
+    var text = '';
+    var a = text.concat('(ST_XMin(ST_Collect(geom))*15+(ST_XMax(ST_Collect(geom))-ST_XMin(ST_Collect(geom)))*15/2) >',xmin,
+    ' and (ST_XMin(ST_Collect(geom))*15+(ST_XMax(ST_Collect(geom))-ST_XMin(ST_Collect(geom)))*15/2) <',xmax,
+    ' and (ST_YMax(ST_Collect(geom))*-15-abs((ST_YMax(ST_Collect(geom))-ST_YMin(ST_Collect(geom))))*-15/2) >',ymin,
+    ' and (ST_YMax(ST_Collect(geom))*-15-abs((ST_YMax(ST_Collect(geom))-ST_YMin(ST_Collect(geom))))*-15/2) <',ymax)
+    var b= "select id_1,name_1,type_1,st_assvg(geom) from vnm_adm1 group by id_1,name_1,type_1,geom having ";
+    var c = b.concat(a);
+    console.log(c);
+    //console.log(c);
+    
+    client.query(c, (err, result) => {
+        if (err) {
+
+            return console.error('Error running query', err)
+        }
+        res.json({province_screen_reduce: result.rows })
+        //console.log(result.rows)
+        //console.log(a)
+        //district_distance = avg_distance(result.rows)
+        })
+    });
+
+app.post('/api/get-geometry-vietnam/commune', (req, res) => {
+    const {district_name} = req.body;
+    var a = '';
+    var district = district_name.replace(/^\s+|\s+$/gm,'');
+    district = "'"+district+"'";
+    var b= "select id_1 , name_1, id_2, name_2, id_3, name_3,type_3, st_assvg(geom) from vnm_adm3 where name_2=";
+    var c = a.concat(b,district)
+    //console.log(c)
+    client.query(c, (err, result) => {
+        if (err) {
+
+            return console.error('Error running query', err)
+        }
         res.json({svg_geo_communes: result.rows })
         console.log(result.rows.length)
+        console.log(a)
         //district_distance = avg_distance(result.rows)
         })
     });
@@ -210,16 +317,35 @@ app.post('/api/get-geometry-info/provinces', (req,res) =>{
 })
 
 
-app.get('/api/get-geometry-vietnam/test', (req, res) => {
+app.get('/api/get-geometry-vietnam/province_bbox', (req, res) => {
+	//const {scale} = req.body;
+    //console.log(scale);
 
-    client.query(`select id_1, name_1, id_2, name_2,type_2,st_assvg(geom) from vnm_adm2 order by id_2`, (err, result) => {
+    client.query(`select id_1,name_1,ST_XMin(ST_Collect(geom))*15 as xmin,ST_XMax(ST_Collect(geom))*15 as xmax,
+    ST_YMin(ST_Collect(geom))*-15 as ymin,ST_YMax(ST_Collect(geom))*-15 as ymax from vnm_adm1 group by id_1,name_1 order by id_1 `, 
+    (err, result) => {
         if (err) {
 
             return console.error('Error running query', err)
         }
-        res.json({test: result.rows })
-        //console.log(result.rows[0].st_assvg)
-        avg_distance(result.rows)
+        res.json({svg_province_bbox: result.rows })
+        //vietnam_distance = avg_distance(result.rows)
+        })
+    });
+
+app.get('/api/get-geometry-vietnam/district_bbox', (req, res) => {
+    //const {scale} = req.body;
+    //console.log(scale);
+
+    client.query(`select id_1,name_1,id_2, name_2,type_2,ST_XMin(ST_Collect(geom))*15 as xmin,ST_XMax(ST_Collect(geom))*15 as xmax,
+    ST_YMin(ST_Collect(geom))*-15 as ymin,ST_YMax(ST_Collect(geom))*-15 as ymax from vnm_adm2 group by id_1,name_1,id_2,name_2,type_2 order by id_2 `, 
+    (err, result) => {
+        if (err) {
+
+            return console.error('Error running query', err)
+        }
+        res.json({svg_district_bbox: result.rows })
+        //vietnam_distance = avg_distance(result.rows)
         })
     });
 
