@@ -38,25 +38,29 @@
     background-color: rgb(179, 15, 15);
     height: 35px;
     display: flex;
+    /* overflow-x: hidden; */
 }
 
 .header__navbar-item{
     margin: 0px auto; 
     padding: 9.5px 10px 9.5px 10px;
     cursor: pointer;
+    /* overflow-x: hidden; */
 
 }
 .header_navbar-item-top{
     margin: 0px;
+    width: 100%;
 }
 
 .header__navbar-item,
 .header__navbar-item-link{
     list-style: none;
     display: inline-block;
-    font-size: 1.563rem;
+    font-size: 1.763rem;
     color:var(--white-color);
     text-decoration: none;
+    /* overflow-x: hidden; */
 }
 
 .header__navbar-item:hover,
@@ -68,6 +72,16 @@
 .header__navbar-item:active{
     color: rgb(88, 8, 8);
 }
+
+#header__navbar-home{
+    /* width: 15%; */
+    /* overflow: clip; */
+}
+#header__navbar-guide{
+    /* width: 25%; */
+    font-size: 50%;
+}
+
 
 #container{
     height: 580px;
@@ -83,6 +97,8 @@
     height: 580px;
     padding-left: 0px;
     width: 25%;
+    overflow-y: auto;
+    display: block;
 }
 
 .container__button-left-list{
@@ -103,7 +119,7 @@
     padding-top: 8px;
     padding-bottom: 8px;
     display: block;
-
+    font-style: italic;
 }
 
 
@@ -118,12 +134,16 @@
 
 
 .container__button-right{
+    position: absolute;
     width: 45px;
     height: 580px;
     float: left;
     border: 1px solid rgb(149, 185, 186);
     border-left-color: aliceblue;
     background-color: var(--white-color);
+    margin-left: 20.3%;
+    z-index:1
+
 }
 
 .container__button-right-list{
@@ -136,9 +156,10 @@
 }
 
 .container__button-right-item{
-    font-size: 1.5rem;
+    font-size: 1.7rem;
     margin-top: 14px;
     margin-bottom: 14px;
+    
 }
 
 .container__map{
@@ -150,6 +171,8 @@
     display: block;
     justify-content: center;
     float: left ;
+    overflow-x: auto;
+    overflow-y: hidden;
 }  
 
 /* #container_map2{
@@ -178,8 +201,9 @@
 
 
 
-#container__map-svg{
+.container__map-svg{
     width: 100%;
+    margin-left: 45px;
 }
 /* maps đang đè lên button phải sửa lại */
 
@@ -249,7 +273,7 @@
 
 #search-list-container{
     height: 225px;
-    overflow-y: scroll;
+    overflow-y: auto;
     cursor: default;
 
 }
@@ -280,7 +304,7 @@
 }
 
 #search-text {
-    width: 150px;
+    width: 100%;
     height: 25px;
     margin:0px 0px 5px 0px;
 }
@@ -304,6 +328,8 @@
 
 .show {display:block;}
 
+.hidden{display: none;}
+
 .container__map-coordinate{
     position: absolute;
     bottom: 0px;
@@ -314,7 +340,7 @@
     font-weight: 550;
     font-size: 1.4rem;
     display: inline-block;
-    padding-left: 10px;
+    margin-left: 55px;
 }
 
 .container__map-mode{
@@ -327,7 +353,7 @@
     font-weight: 550;
     font-size: 1.4rem;
     display: inline-block;
-    padding-left: 10px;
+    margin-left: 55px;
 }
 #pan{
     position: absolute;
@@ -376,46 +402,68 @@ footer .social {
     margin-bottom: 20px;
 }
 
-
-.note_name{
-    width: 88%;
-    float: left;
+.note1{
+    padding-top: 0;
+    font-weight: 450;
 }
 
-#note_icon{
-    width: 2%;
-    text-align: left;
-    font-size: 15px;
-    float: left;
-}
-
-#note_icon i{
-    float: bottom;
+.note-name{
+    text-align: center;
+    font-weight: 600;
 }
 
 #Thủ_đô{
-    color: orange;
+    color: red;
+    float:right;
+    padding-right: 5px;
 }
 
 #Trực_Thuộc{
-    color: yellow;
+    color: blue;
+    float:right;
+    padding-right: 5px;
 }
 #Tỉnh{
     color: green;
+    float:right;
+    padding-right: 5px;
 }
 
 #Thành_Phố{
-    color: gold;
+    color: red;
+    float:right;
+    padding-right: 5px;
 }
 
 #Thị_Xã{
-    color: red
+    color: blue;
+    float:right;
+    padding-right: 5px;
 }
 
 #Quận{
-    color: blue;
+    color: brown;
+    float:right;
+    padding-right: 5px;
 }
 
 #Huyện{
     color:green;
+    float:right;
+    padding-right: 5px;
+}
+#Phường{
+    color:red;
+    float:right;
+    padding-right: 5px;
+}
+#Xã{
+    color:gold;
+    float:right;
+    padding-right: 5px;
+}
+#Thị_Trấn{
+    color:green;
+    float:right;
+    padding-right: 5px;
 }

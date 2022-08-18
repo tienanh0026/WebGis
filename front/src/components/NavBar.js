@@ -14,24 +14,25 @@ const Navbar = () => {
                         <div className="header__navbar-pic">
                             <img src={logoheader} alt="hust" className="header__navhome-img"/> 
                         </div>       
-                        <a href="http://localhost:3000/" className="header__navhome-link"> HỆ THỐNG QUẢN LÝ</a></nav>
+                        <a href="http://localhost:3000/" className="header__navhome-link"> HỆ THỐNG BẢN ĐỒ HÀNH CHÍNH VIỆT NAM</a></nav>
                     <nav className="header__navbar">
                         <ul className="header_navbar-item-top">
-                            <li className="header__navbar-item">
+                            <li className="header__navbar-item" id="header__navbar-home">
                                 <Link to="/" className="header__navbar-item-link"> 
                                     <i className="fa-solid fa-house"></i> TRANG CHỦ
                                 </Link> 
                             </li>
-                            <li className="header__navbar-item" >
-                                <Link to="/guide" className="header__navbar-item-link">
+                            <li className="header__navbar-item" id="header__navbar-guide">
+                                <Link to="/guide" className="header__navbar-item-link" >
                                     <i className="fa-solid fa-book" ></i> HƯỚNG DẪN SỬ DỤNG 
                                 </Link>
                             </li>
-                            <li className="header__navbar-item" >
+                            {/* <li className="header__navbar-item" id="header__navbar-contact
+                            ">
                                 <Link to="/contact" className="header__navbar-item-link">
                                     <i className="fa-solid fa-address-book"></i> LIÊN HỆ 
                                 </Link>
-                            </li>
+                            </li> */}
                         </ul>
                     </nav>
                 </div> 

@@ -66,31 +66,9 @@ const Home = () => {
     }    
 
     function coordinate_display(event){
-        //setX(convertToDms((event.x/15),false));
-        //setY(convertToDms((-event.y/15),true));
-        // chỉnh lại để xem rìa của tọa độ chỉnh lai
-
-        document.getElementById('x-coordinate').innerHTML = event.x;
-        document.getElementById('y-coordinate').innerHTML = event.y;
-        // document.getElementById('x-coordinate').innerHTML = convertToDms((event.x/15),false);
-        // document.getElementById('y-coordinate').innerHTML = convertToDms((-event.y/15),true);
-        // return console.log('click', event.x, event.y, 
+        document.getElementById('x-coordinate').innerHTML = convertToDms((event.x/15),false);
+        document.getElementById('y-coordinate').innerHTML = convertToDms((-event.y/15),true);
     }   
-
-    // function pan_display(event){
-    //     // document.getElementById('startX').innerHTML ="start X: "+ event.startX;
-    //     // document.getElementById('startY').innerHTML ="start Y: "+ event.startY;
-    //     // document.getElementById('endX').innerHTML = "end X: "+event.endX;
-    //     // document.getElementById('endY').innerHTML = "end Y: "+event.endY;
-    //     // document.getElementById('current_w').innerHTML = "Current width: "+(432.69/Math.pow(1.3,scale));
-    //     // document.getElementById('current_h').innerHTML = "Current height: "+(280/Math.pow(1.3,scale));
-    //     // // ban đầu tọa độ của O là (1450,-370)
-    //     // document.getElementById('new_x').innerHTML = "New X: "+event.endX;
-    //     // document.getElementById('new_y').innerHTML = "New Y: "+event.endY;
-    //     document.getElementById('e').innerHTML = "translationX: "+(event.startX-event.endX);
-    //     document.getElementById('f').innerHTML = "translationY: "+(event.startY-event.endY);
-    //     // x={x1} y={y1} width={x2 - x1} height={y2 - y1}
-    // }   
 
     function toogleButton(){
         setButton(Button+1);
@@ -103,26 +81,7 @@ const Home = () => {
             document.getElementsByClassName('container__map')[0].style.width=0.7*w;
         }
     }
-
-    function displayObject(button,object) {
-        // Get the checkbox
-        var checkBox = document.getElementById(button);
-        
-        // Get the output text
-        var elems = document.getElementsByClassName(object);
-        
-        // If the checkbox is checked, display the output text
-        if (checkBox.checked){
-            for (var i=0;i<elems.length;i+=1){
-                elems[i].style.display = 'block';
-              }
-        } else {
-            for (i=0;i<elems.length;i+=1){
-                elems[i].style.display = 'none';
-              }
-        }
-      } 
-
+    
 
     const [svg_vietnam,setSvg_vietnam]=useState([]);
 
@@ -137,23 +96,17 @@ const Home = () => {
             });
             let responseData = await response.json();
             setSvg_vietnam(responseData)
-            //reduce_points(svg_vietnam.svg_geo_vn);
-            //console.log(svg_vietnam.svg_geo_vn[0].st_assvg.length);
             for (var b = 0; b <65; b++){
                 var a = 'province';
                 document.getElementById(a.concat(b+1)).innerHTML = "";
             }
             document.getElementById("svg_districts").innerHTML = "";
             document.getElementById("svg_communes").innerHTML = "";
+            document.getElementById("communes_label").innerHTML = "";
             var path = '';
             document.getElementById("layer_1").innerHTML = path.concat('<path id="vietnam" d="',svg_vietnam.svg_geo_vn[0].st_assvg,'" fill="yellow"/>');            
             document.getElementById("layer_1").style.transform = "scale(15,15)";
             getLabel_vietnam();
-            //reduce(svg_vietnam.svg_geo_vn);
-            // document.getElementById("layer_1").d = responseData.geoVN.rows[0].st_assvg;
-            //console.log(responseData.svg_geo.rows[0].svg);
-            // document.getElementById("layer_1").innerHTML = responseData.svg_geo_vn.rows[0].svg;
-            // console.log(document.getElementById("layer_1"))
         } catch(err) {
             console.log(err)
         }
@@ -167,6 +120,7 @@ const Home = () => {
             }
             document.getElementById("svg_districts").innerHTML = "";
             document.getElementById("svg_communes").innerHTML = "";
+            document.getElementById("communes_label").innerHTML = "";
             var path = '';
             document.getElementById("layer_1").innerHTML = path.concat('<path id="vietnam" d="',svg_vietnam.svg_geo_vn[0].st_assvg,'" fill="yellow"/>');            
             document.getElementById("layer_1").style.transform = "scale(15,15)";
@@ -175,261 +129,104 @@ const Home = () => {
             //reduce(svg_vietnam.svg_geo_vn);
         }
     }
-    
-    const [svg_provinces,setSvg_provinces] = useState([]);
 
-    const getSVG_provinces = async () => {
-        if(svg_provinces.length == 0){
+    const takeSVG = async (screen,scale) => {
+        if(scale<5){
             try{
-                const response = await fetch('http://localhost/api/get-geometry-vietnam/provinces',{
+                const response = await fetch('http://localhost/api/get-geometry-vietnam/vietnam',{
                     method: 'GET',
                     credentials: 'omit',
                     headers: {"Content-Type":'application/json'},
                     body: JSON.stringify()
                 });
-                let responseData= await response.json();
-                setSvg_provinces(responseData.svg_geo_provinces)
-                // console.log(svg_provinces);
-                document.getElementById("layer_1").innerHTML = "";
+                let responseData = await response.json();
+                var svg_vietnam = responseData;
                 document.getElementById("svg_districts").innerHTML = "";
                 document.getElementById("svg_communes").innerHTML = "";
-                //var new_svg = reduce_points_provinces(svg_provinces);
-                for (var z = 0; z < svg_provinces.length; z++){
-                    var path = '';
-                    var a = 'province';
-                    var type = '';
-                    if(svg_provinces[z].type_1 === 'Thành phố trực thuộc tỉnh'){
-                        type = 'yellow';
-                    }
-                    else type = 'green';
-                    document.getElementById(a.concat(z+1)).innerHTML = path.concat('<path d="',
-                    svg_provinces[z].st_assvg,
-                    //new_svg[z],
-                    '" id="',svg_provinces[z].name_1,' " fill="',type,'"/>');
-                    document.getElementById(a.concat(z+1)).style.transform = "scale(15,15)";
-                    getLabel_provinces();
-                }
-                //reduce(svg_provinces);
-            } catch(err) {
-                console.log(err)
-            }
-        }
-        else{
-            console.log("k gui")
-            document.getElementById("layer_1").innerHTML = "";
-            document.getElementById("svg_districts").innerHTML = "";
-            document.getElementById("svg_communes").innerHTML = "";
-            //var new_svg = reduce_points_provinces(svg_provinces);
-            for (var z = 0; z < svg_provinces.length; z++){
+                document.getElementById("svg_provinces").innerHTML = "";
+                document.getElementById("districts_label").innerHTML = '';
+                document.getElementById("provinces_label").innerHTML = '';
                 var path = '';
-                var a = 'province';
-                var type = '';
-                if(svg_provinces[z].type_1 === 'Thành phố trực thuộc tỉnh'){
-                    type = 'yellow';
-                }
-                else type = 'green';
-                document.getElementById(a.concat(z+1)).innerHTML = path.concat('<path d="',
-                svg_provinces[z].st_assvg,
-                //new_svg[z],
-                '" id="',svg_provinces[z].name_1,' " fill="',type,'"/>');
-                document.getElementById(a.concat(z+1)).style.transform = "scale(15,15)";
-                getLabel_provinces();   
-            }
-            //reduce(svg_provinces);
-        }
-    }
-
-    const [svg_districts,setSvg_districts] = useState([]);
-
-    const getSVG_district = async () => {
-        if(svg_districts.length == 0 ){
-            try{
-                const response = await fetch('http://localhost/api/get-geometry-vietnam/district',{
-                    method: 'GET',
-                    credentials: 'omit',
-                    headers: {"Content-Type":'application/json'},
-                    body: JSON.stringify()
-                });
-                let responseData= await response.json();
-                var path ='';
-                var district_svg_path = '';
-                console.log('a')
-                setSvg_districts(responseData.svg_geo_districts);
-                //var new_svg = reduce_points_districts(svg_districts);
-                for(var i = 0; i < svg_districts.length; i++){
-                    var type = '';
-                    if(svg_districts[i].type_2 === 'Than Pho'){
-                        type = "gold";
-                    }
-                    if(svg_districts[i].type_2 === 'Thi xa'){
-                        type = 'red';
-                    }
-                    if(svg_districts[i].type_2 === 'Quận'){
-                        type = 'blue';
-                    }
-                    if(svg_districts[i].type_2 === 'Huyện'){
-                        type = 'green';
-                    }
-                    district_svg_path+=path.concat(' <path d="',
-                    svg_districts[i].st_assvg
-                    //new_svg[i]
-                    ,'" id="',svg_districts[i].name_2,'" onClick = {()=>setSvg_commune(',svg_districts[i].name_2,')}  fill="',type,'"  transform="scale(15,15)"/> ');
-                }
-                //reduce(svg_districts);
-                document.getElementById("layer_1").innerHTML = '';
-                for (var b = 0; b <65; b++){
-                    var a = 'province';
-                    document.getElementById(a.concat(b+1)).innerHTML = "";
-                }
-                document.getElementById("svg_communes").innerHTML = "";
-                document.getElementById('svg_districts').innerHTML = district_svg_path;
-                getLabel_districts();
+                document.getElementById("layer_1").innerHTML = path.concat('<path id="vietnam" d="',svg_vietnam.svg_geo_vn[0].st_assvg,'" fill="yellow"/>');            
+                document.getElementById("layer_1").style.transform = "scale(15,15)";
+                getLabel_vietnam();
+                console.log('lop1')
             } catch(err) {
                 console.log(err)
             }
         }
-        else{
-            var path ='';
-            var district_svg_path = '';
-            for(var i = 0; i < svg_districts.length; i++){
-                    
-                var type = '';
-                if(svg_districts[i].type_2 === 'Than Pho'){
-                    type = "gold";
-                }
-                if(svg_districts[i].type_2 === 'Thi xa'){
-                    type = 'red';
-                }
-                if(svg_districts[i].type_2 === 'Quận'){
-                    type = 'blue';
-                }
-                if(svg_districts[i].type_2 === 'Huyện'){
-                    type = 'green';
-                }
-                district_svg_path+=path.concat(' <path d="',
-                svg_districts[i].st_assvg
-                //new_svg[i]
-                ,'" id="',svg_districts[i].name_2,' " fill="',type,'"  transform="scale(15,15)"/> ');
-            }
-            console.log('a')
-            //reduce(svg_districts);
-            document.getElementById("layer_1").innerHTML = '';
-            for (var b = 0; b <65; b++){
-                var a = 'province';
-                document.getElementById(a.concat(b+1)).innerHTML = "";
-            }
-            document.getElementById("svg_communes").innerHTML = "";
-            document.getElementById('svg_districts').innerHTML = district_svg_path;
-            getLabel_districts();
-        }
-    }
-    
-    const takeSVG_district = async (screen) => {
-        if(scale<5){
-            if(svg_vietnam.length == 0){
-                try{
-                    const response = await fetch('http://localhost/api/get-geometry-vietnam/vietnam',{
-                        method: 'GET',
-                        credentials: 'omit',
-                        headers: {"Content-Type":'application/json'},
-                        body: JSON.stringify()
-                    });
-                    let responseData = await response.json();
-                    setSvg_vietnam(responseData)
-                    //reduce_points(svg_vietnam.svg_geo_vn);
-                    //console.log(svg_vietnam.svg_geo_vn[0].st_assvg.length);
-                    document.getElementById("svg_districts").innerHTML = "";
-                    document.getElementById("svg_communes").innerHTML = "";
-                    document.getElementById("svg_provinces").innerHTML = "";
-                    var path = '';
-                    document.getElementById("layer_1").innerHTML = path.concat('<path id="vietnam" d="',svg_vietnam.svg_geo_vn[0].st_assvg,'" fill="yellow"/>');            
-                    document.getElementById("layer_1").style.transform = "scale(15,15)";
-                    getLabel_vietnam();
-                    //reduce(svg_vietnam.svg_geo_vn);
-                    // document.getElementById("layer_1").d = responseData.geoVN.rows[0].st_assvg;
-                    //console.log(responseData.svg_geo.rows[0].svg);
-                    // document.getElementById("layer_1").innerHTML = responseData.svg_geo_vn.rows[0].svg;
-                    // console.log(document.getElementById("layer_1"))
-                } catch(err) {
-                    console.log(err)
-                }
-                }
-                else{
-                    console.log("k can gui tu tren server vè nữa");
-                    document.getElementById("svg_districts").innerHTML = "";
-                    document.getElementById("svg_communes").innerHTML = "";
-                    document.getElementById("svg_provinces").innerHTML = "";
-                    var path = '';
-                    document.getElementById("layer_1").innerHTML = path.concat('<path id="vietnam" d="',svg_vietnam.svg_geo_vn[0].st_assvg,'" fill="yellow"/>');            
-                    document.getElementById("layer_1").style.transform = "scale(15,15)";
-                    
-                    getLabel_vietnam();
-                    //reduce(svg_vietnam.svg_geo_vn);
-                }
-        }
-        if(scale>5 && scale<11){
+        if(scale>=5 && scale<11){
             try{
                 const response = await fetch('http://localhost/api/get-geometry-vietnam/province-new',{
                     method: 'POST',
                     credentials: 'omit',
                     headers: {"Content-Type":'application/json'},
-                    body: JSON.stringify({screen})
+                    body: JSON.stringify({screen,scale})
                 });
                 let responseData= await response.json();
                 var path ='';
                 var province_svg_path = '';
-                console.log(responseData.province_screen_reduce);
+                var provinces_label = ''
                 var svg_provinces = responseData.province_screen_reduce;
                 console.log(svg_provinces);
-                // console.log(svg_provinces);
+                console.log(svg_provinces[0].xmin);
                 document.getElementById("layer_1").innerHTML = "";
                 document.getElementById("svg_districts").innerHTML = "";
-                //var new_svg = reduce_points_provinces(svg_provinces);
+                document.getElementById("svg_communes").innerHTML = "";
+                document.getElementById("districts_label").innerHTML = '';
                 for(var i = 0; i < svg_provinces.length; i++){
                     var type = '';
                     if(svg_provinces[i].type_1 === 'Thành phố trực thuộc tỉnh'){
-                        type = 'yellow';
+                        type = 'blue';
                     }
+                    else type = 'green'; 
                     if(svg_provinces[i].name_1 == 'Hà Nội'){
                         type = 'red';
                     }
-                    else type = 'green'; 
                     province_svg_path+=path.concat(' <path d="',
                     svg_provinces[i].st_assvg
-                    ,'" id="',svg_provinces[i].name_1,'" fill="',type,'"  transform="scale(15,15)" /> ');
+                    ,'" id="',svg_provinces[i].name_1,'" fill="',type,'"  transform="scale(15,15)" /> ');  
+                    var x = svg_provinces[i].xmin;
+                    var y = svg_provinces[i].ymin;
+                    var width = svg_provinces[i].xmax-svg_provinces[i].xmin;
+                    var height = svg_provinces[i].ymax-svg_provinces[i].ymin;
+                    var path='';
+                    provinces_label += path.concat('<text x=',x+width/2,' y=',y+height/2,' fill="#FFD100" dominantBaseline="middle" textAnchor="middle" font-size="1px" font-weight="400">',svg_provinces[i].name_1,'</text>')
                 }
                 document.getElementById('svg_provinces').innerHTML = province_svg_path;
-                //console.log(district_svg_path);
+                document.getElementById("provinces_label").innerHTML = provinces_label;
                 console.log(document.getElementById('svg_provinces'));
+                console.log(document.getElementById('provinces_label'));
             } catch(err) {
                 console.log(err)
             }
         }
-        if(scale >11){
+        if(scale >11 && scale <20){
             try{
                 const response = await fetch('http://localhost/api/get-geometry-vietnam/district-new',{
                     method: 'POST',
                     credentials: 'omit',
                     headers: {"Content-Type":'application/json'},
-                    body: JSON.stringify({screen})
+                    body: JSON.stringify({screen,scale})
                 });
                 //console.log(responseData.screen_reduce);
                 let responseData= await response.json();
                 var path ='';
                 var district_svg_path = '';
+                var district_label = '';
                 var svg_districts = responseData.screen_reduce;
                 console.log(svg_districts);
                 //var new_svg = reduce_points_districts(svg_districts);
                 for(var i = 0; i < svg_districts.length; i++){
                     var type = '';
                     if(svg_districts[i].type_2 === 'Than Pho'){
-                        type = "gold";
+                        type = "red";
                     }
                     if(svg_districts[i].type_2 === 'Thi xa'){
-                        type = 'red';
+                        type = 'blue';
                     }
                     if(svg_districts[i].type_2 === 'Quận'){
-                        type = 'blue';
+                        type = 'brown';
                     }
                     if(svg_districts[i].type_2 === 'Huyện'){
                         type = 'green';
@@ -437,20 +234,93 @@ const Home = () => {
                     district_svg_path+=path.concat(' <path d="',
                     svg_districts[i].st_assvg
                     ,'" id="',svg_districts[i].name_2,'" fill="',type,'"  transform="scale(15,15)" /> ');
+                    var x = svg_districts[i].xmin;
+                    var y = svg_districts[i].ymin;
+                    var width = svg_districts[i].xmax-svg_districts[i].xmin;
+                    var height = svg_districts[i].ymax-svg_districts[i].ymin;
+                    var path='';
+                    var font_size = '';
+                    if((svg_districts[i].name_1 === 'Hà Nội' && svg_districts[i].type_2 === 'Quận') || (svg_districts[i].name_1 === 'Hồ Chí Minh city'  && svg_districts[i].type_2 === 'Quận') || (svg_districts[i].name_1 === 'Đà Nẵng' && svg_districts[i].type_2 === 'Quận')){
+                        font_size = '0.09px';
+                    }
+                    else font_size = '0.225px';
+                    district_label += path.concat('<text x=',x+width/2,' y=',y+height/2,' fill="#FFD100" font-size="',font_size,'" font-weight="200">',svg_districts[i].name_2,'</text>')
+   
                 }
+                document.getElementById('districts_label').innerHTML = district_label;
                 document.getElementById("layer_1").innerHTML = '';
                 document.getElementById("svg_provinces").innerHTML = '';
+                document.getElementById("svg_communes").innerHTML = "";
+                document.getElementById('communes_label').innerHTML = '';
+                document.getElementById("provinces_label").innerHTML = '';
                 document.getElementById('svg_districts').innerHTML = district_svg_path;
                 //console.log(district_svg_path);
+                console.log(document.getElementById('districts_label'));
                 console.log(document.getElementById('svg_districts'));
+                
+            } catch(err) {
+                console.log(err)
+            }
+        }
+        if(scale >20){
+            try{
+                const response = await fetch('http://localhost/api/get-geometry-vietnam/communes-new',{
+                    method: 'POST',
+                    credentials: 'omit',
+                    headers: {"Content-Type":'application/json'},
+                    body: JSON.stringify({screen,scale})
+                });
+                //console.log(responseData.screen_reduce);
+                let responseData= await response.json();
+                var path ='';
+                var communes_svg_path = '';
+                var communes_label = '';
+                var svg_communes = responseData.screen_reduce_communes;
+                console.log(svg_communes);
+                //var new_svg = reduce_points_districts(svg_districts);
+                for(var i = 0; i < svg_communes.length; i++){
+                    if((svg_communes[i].name_1 === 'Hà Nội' && svg_communes[i].type_3 ==='ward') || (svg_communes[i].name_1 === 'Hồ Chí Minh city' && svg_communes[i].type_3 ==='ward') || (svg_communes[i].name_1 === 'Đà Nẵng' && svg_communes[i].type_3 ==='ward')){
+                        font_size = '0.0105px';
+                    }
+                    else font_size = '0.024px';
+                    var x = svg_communes[i].xmin;
+                    var y = svg_communes[i].ymin;
+                    var width = svg_communes[i].xmax-svg_communes[i].xmin;
+                    var height = svg_communes[i].ymax-svg_communes[i].ymin;
+                    communes_label += path.concat('<text x=',x+width/2,' y=',y+height/2,' fill="black" font-size="',font_size, '" font-weight="300">',svg_communes[i].name_3,'</text>')
+                    
+                    var type = '';
+                    if(svg_communes[i].type_3 === 'Commune'){
+                        type = "gold";
+                    }
+                    if(svg_communes[i].type_3 === 'Ward'){
+                        type = 'red';
+                    }
+                    if(svg_communes[i].type_3 === 'Townlet'){
+                        type = 'green';
+                    }
+                    communes_svg_path+=path.concat(' <path d="',
+                    svg_communes[i].st_assvg
+                    ,'" id="',svg_communes[i].name_3,' " fill="',type,'"  transform="scale(15,15)"/> ');
+
+                }
+                document.getElementById('districts_label').innerHTML ='';
+                document.getElementById("svg_districts").innerHTML = '';
+                document.getElementById("layer_1").innerHTML = '';
+                document.getElementById("svg_provinces").innerHTML = '';
+                document.getElementById("provinces_label").innerHTML = '';
+                document.getElementById('svg_communes').innerHTML = communes_svg_path;
+                document.getElementById('communes_label').innerHTML = communes_label;
+                //console.log(district_svg_path);
+                console.log(document.getElementById('communes_label'));
+                console.log(document.getElementById('svg_communes'));
+                
             } catch(err) {
                 console.log(err)
             }
         }
         
     }
-
-    const [svg_communes,setSvg_communes] = useState([]);
 
     function getLabel_vietnam(){
         var object = document.getElementById("layer_1");
@@ -463,60 +333,7 @@ const Home = () => {
         document.getElementById("label").innerHTML = path.concat('<text id="vietnam_label" x=',x+width/2,' y=',y+height/2,' fill="red" dominant-baseline="middle" text-anchor="middle" font-size="0.5px" font-weight="600">Việt Nam</text>')   //'<text id="vietnam_label" x=',x,' y=',y,' fill="red">Việt Nam</text>'
         // console.log('x: ',x*15,'y: ',y*15,'width: ',width*15,' height:', height*15)
         // console.log(document.getElementById("vietnam_label"))
-    }
-    function getLabel_provinces(){
-        var provinces_label = ''
-        for (var z = 0; z < province_bbox.length; z++){
-            var a='province'
-            var x = province_bbox[z].xmin;
-            var y = province_bbox[z].ymin;
-            var width = province_bbox[z].xmax-province_bbox[z].xmin;
-            var height = province_bbox[z].ymax-province_bbox[z].ymin;
-            var path='';
-            provinces_label += path.concat('<text x=',x+width/2,' y=',y+height/2,' fill="red" dominantBaseline="middle" textAnchor="middle" font-size="0.08px" font-weight="400">',province_bbox[z].name_1,'</text>')
-        }
-        document.getElementById("provinces_label").innerHTML = provinces_label;
-    }
-
-    function getLabel_districts(){
-        var districts_label = ''
-        for (var z = 0; z < district_bbox.length; z++){
-            var districts = document.getElementById("svg_districts");
-            var x = district_bbox[z].xmin;
-            var y = district_bbox[z].ymin;
-            var width = district_bbox[z].xmax-district_bbox[z].xmin;
-            var height = district_bbox[z].ymax-district_bbox[z].ymin;
-            var path='';
-            var font_size;
-            if((district_bbox[z].name_1 === 'Hà Nội' && district_bbox[z].type_2 === 'Quận') || (district_bbox[z].name_1 === 'Hồ Chí Minh city'  && district_bbox[z].type_2 === 'Quận') || (district_bbox[z].name_1 === 'Đà Nẵng' && district_bbox[z].type_2 === 'Quận')){
-                font_size = '0.006px';
-            }
-            else font_size = '0.015 px';
-            districts_label += path.concat('<text x=',x+width/2,' y=',y+height/2,' fill="black" dominantBaseline="middle" textAnchor="middle" font-size=',font_size, ' font-weight="400"  >',district_bbox[z].name_2,'</text>')
-        }
-        document.getElementById("districts_label").innerHTML = districts_label;
-    }
-
-    function getLabel_communes(){
-        var communes_label = '';
-        for (var z = 0; z < svg_communes.length; z++){
-            var communes = document.getElementById("svg_communes");
-            var object = communes.getElementsByTagName("path");
-            var x = object[z].getBBox().x;
-            var y = object[z].getBBox().y;
-            var width = object[z].getBBox().width;
-            var height = object[z].getBBox().height;
-            var path='';
-            var font_size;
-            if((svg_communes[z].name_1 === 'Hà Nội' && svg_communes[z].type_3 ==='ward') || (svg_communes[z].name_1 === 'Hồ Chí Minh city' && svg_communes[z].type_3 ==='ward') || (svg_communes[z].name_1 === 'Đà Nẵng' && svg_communes[z].type_3 ==='ward')){
-                font_size = '0.0007px';
-            }
-            else font_size = '0.0016px';
-            communes_label += path.concat('<text x=',x+width/2,' y=',y+height/2,' fill="black" dominantBaseline="middle" textAnchor="middle" font-size=',font_size, ' font-weight="300">',svg_communes[z].name_3,'</text>')
-        }
-        document.getElementById("communes_label").innerHTML = communes_label;
-        console.log("a");
-        console.log(document.getElementById("communes_label"))
+        document.getElementById("communes_label").innerHTML = '';
     }
 
     const [district_bbox, setDistrict_bbox] = useState(null);
@@ -554,283 +371,39 @@ const Home = () => {
             console.log(err)
         }
     }
+
+    const [commune_bbox, setCommune_bbox] = useState(null);
+
+    const getCommune_bbox = async () => {
+        try{
+            const response = await fetch('http://localhost/api/get-geometry-vietnam/commune_bbox',{
+                method: 'GET',
+                credentials: 'omit',
+                headers: {"Content-Type":'application/json'},
+                body: JSON.stringify()
+            });
+            let responseData = await response.json();
+            setCommune_bbox(responseData.svg_commune_bbox);
+            //console.log(province_bbox);
+        } catch(err) {
+            console.log(err)
+        }
+    }
     // hàm tính logarit
     function getBaseLog(x, y) {
         return Math.log(y) / Math.log(x);
       }
 
-    function getLayer(){ 
-        if(scale <5){
-            // for (var b = 0; b <65; b++){
-            //     var a = 'province';
-            //     document.getElementById(a.concat(b+1)).innerHTML = "";
-            // }
-            document.getElementById("provinces_label").innerHTML = "";
-            document.getElementById("districts_label").innerHTML = "";
-            if (document.getElementById("layer_1").innerHTML !== ""){
-                return
-            }
-            if (document.getElementById("layer_1").innerHTML === ""){
-                getSVG();
-            }
-            //getSVG();
-        }
-        if(scale >=5 && scale <=11){
-            document.getElementById("districts_label").innerHTML = "";
-            document.getElementById("communes_label").innerHTML = "";
-            if(document.getElementById("province1").innerHTML !==""){
-                return
-            }
-            for (var b = 0; b <65; b++){
-                var a = 'province';
-                if(document.getElementById(a.concat(b+1)).innerHTML === ""){
-                    getSVG_provinces();
-                    console.log(b)
-                    break;
-                }
-            }
-            // document.getElementById("layer_1").innerHTML = "";
-            // document.getElementById("svg_districts").innerHTML = "";
-        }
-        if(scale>11 ){
-            document.getElementById("provinces_label").innerHTML = "";
-            //document.getElementById("communes_label").innerHTML = "";
-            if(document.getElementById("svg_districts").innerHTML === ""){
-                getSVG_district();
-            }
-        }
-        // if (scale > 22){
-        //     document.getElementById("districts_label").innerHTML = "";
-        //     if(document.getElementById("svg_communes").innerHTML === ""){
-        //         getSVG_commune();
-        //     }
-        // }
-    }
-
-    function display_object(){
-        if(district_bbox == null){
-            return
-        }
-        else{
-            var screen_extend = 1.1;
-            if (document.getElementById('province6').innerHTML != ""){
-                if(scale > 5 && scale < 8){
-                    screen_extend = 1.4;
-                }
-                else if (scale > 8 && scale < 11){
-                    screen_extend = 1.55;
-                }
-                for (var a=0;a<province_bbox.length;a++){
-                    var xmin = province_bbox[a].xmin;
-                    var xmax = province_bbox[a].xmax;
-                    var ymin = province_bbox[a].ymin;
-                    var ymax = province_bbox[a].ymax;
-                    var center_x = xmin + (xmax-xmin)/2;
-                    var center_y = ymax + (Math.abs(ymin-ymax)/2);
-                    // setCoor_x(c[0].x);
-                    // setCoor_y(c[0].y);
-                    // setScreen_width(c[1].x-c[0].x);
-                    // setScreen_height(c[1].y-c[0].y);
-                    var coor_x = screen_para[0].x;
-                    var coor_y = screen_para[0].y;
-                    var screen_width = screen_para[1].x - screen_para[0].x;
-                    var screen_height = screen_para[1].y - screen_para[0].y;
-                    if(((coor_x-screen_width*(screen_extend-1))<center_x && center_x<(coor_x+screen_width*screen_extend)) && (coor_y-screen_width*(screen_extend-1))< center_y &&center_y<(coor_y+screen_height*screen_extend)){
-                        //console.log(province_bbox[a].name_1);
-                        var x='province';
-                        document.getElementById(x.concat(a+1)).style.display = "block";    
-                        //console.log('trong sccreen')
-                    }
-                    else {
-                        var x='province';
-                        document.getElementById(x.concat(a+1)).style.display = "none";    
-                    }
-                    //console.log('coor_x:', coor_x, ' center_x: ',center_x)
-                }
-                //console.log('coor_x:', coor_x, ' center_x: ',center_x, " endX: ",coor_x+screen_width,'coor_y:', coor_y, ' center_y: ',center_y, " endy: ",coor_y+screen_height)
-                //console.log('tỉnh')
-                //console.log((coor_x<center_x && center_x<(coor_x+screen_width)) && (coor_y)< center_y &&center_y<(coor_y+screen_height))
-                // }
-            }
-            if(document.getElementById("svg_districts").innerHTML != ""){
-                var a='';
-                var b='';
-                var districts = document.getElementById("svg_districts");
-                var object = districts.getElementsByTagName("path");
-                if(scale > 11 && scale < 14){
-                    screen_extend = 1.65;
-                }
-                else if(scale > 14 && scale < 16){
-                    screen_extend = 1.76;
-                }
-                else if(scale > 16 && scale < 19){
-                    screen_extend = 1.85;
-                }
-                else if(scale > 19){
-                    screen_extend = 2.05;
-                }
-
-                for (var a=0;a<district_bbox.length;a++){
-                    var xmin = district_bbox[a].xmin;
-                    var xmax = district_bbox[a].xmax;
-                    var ymin = district_bbox[a].ymin;
-                    var ymax = district_bbox[a].ymax;
-                    var center_x = xmin + (xmax-xmin)/2;
-                    var center_y = ymax + (Math.abs(ymin-ymax)/2);
-                    var coor_x = screen_para[0].x;
-                    var coor_y = screen_para[0].y;
-                    var screen_width = screen_para[1].x - screen_para[0].x;
-                    var screen_height = screen_para[1].y - screen_para[0].y;
-                    if(((coor_x-screen_width*(screen_extend-1))<center_x && center_x<(coor_x+screen_width*screen_extend)) && (coor_y-screen_width*(screen_extend-1))< center_y &&center_y<(coor_y+screen_height*screen_extend)){
-                        object[a].style.display = 'block'
-                        //object.style.display = "block";   
-                        //a+=b.concat(getSVG_district_test(district_bbox[a].name_2));
-                        //console.log('trong sccreen')
-                    }
-                    else{
-                        object[a].style.display = 'none'
-                    }
-                }
-                //document.getElementById('svg_districts').innerHTML = a;
-                //console.log("a")
-            }
-        }
-    }
-    // const getSVG_district_test = async (name) => {
-    //     var z = name;
-    //     console.log(z)
-    //         try{
-    //             const response = await fetch('http://localhost/api/get-geometry-vietnam/district_test',{
-    //                 method: 'POST',
-    //                 credentials: 'omit',
-    //                 headers: {"Content-Type":'application/json'},
-    //                 body: JSON.stringify({name})
-    //             });
-    const getSVG_district_test = async (district_name) => {
-                    try{
-                        const response = await fetch('http://localhost/api/get-geometry-vietnam/district_test',{
-                            method: 'POST',
-                            credentials: 'omit',
-                            headers: {"Content-Type":'application/json'},
-                            body: JSON.stringify({district_name})
-                        });
-                let responseData= await response.json();
-                var path ='';
-                var district_svg_path = '';
-                
-                setSvg_districts(responseData.svg_geo_communes);
-                //console.log(svg_districts)
-                //var new_svg = reduce_points_districts(svg_districts);
-                    var type = '';
-                    if(svg_districts[0].type_2 === 'Than Pho'){
-                        type = "gold";
-                    }
-                    if(svg_districts[0].type_2 === 'Thi xa'){
-                        type = 'red';
-                    }
-                    if(svg_districts[0].type_2 === 'Quận'){
-                        type = 'blue';
-                    }
-                    if(svg_districts[0].type_2 === 'Huyện'){
-                        type = 'green';
-                    }
-                    district_svg_path+=path.concat(' <path d="',
-                    svg_districts[0].st_assvg
-                    ,'"  id="',svg_districts[0].name_2,'" onClick = {()=>setSvg_commune("Hoàng Mai")}  fill="blue"  "/> ');
-                    //onClick = {()=>setSvg_commune(',svg_districts[0].name_2,')}  fill="',type,'"  transform="scale(15,15)"/> ');
-                // document.getElementById("layer_1").innerHTML = '';
-                // for (var b = 0; b <65; b++){
-                //     var a = 'province';
-                //     document.getElementById(a.concat(b+1)).innerHTML = "";
-                // }
-                // document.getElementById("svg_communes").innerHTML = "";
-
-                // console.log(district_svg_path);
-                // var abc = path.concat(' <path d="',
-                // svg_districts[0].st_assvg
-                // ,'" id="',svg_districts[0].name_2,'" onClick = {()=>setSvg_commune(',svg_districts[0].name_2,')}  fill="',type,'"  transform="scale(15,15)"/> ');
-                // console.log(abc)
-                setTest(district_svg_path);
-            } catch(err) {
-                console.log(err)
-            }
-    }
-    const [test, setTest] = useState(null);
- 
-    function getLabel(){ 
-        if(scale <5){
-            document.getElementById("provinces_label").innerHTML = "";
-            document.getElementById("districts_label").innerHTML = "";
-        }
-        if(scale >=5 && scale <=11){
-            document.getElementById("districts_label").innerHTML = "";
-            getLabel_provinces();
-        }
-        if(scale>11){
-            document.getElementById("provinces_label").innerHTML = "";
-            getLabel_districts();
-        }
-    }
-
-
-
-    
-    const setSVG_commune = async (e) => {
-        var district_name = e.target.id;
-        try{
-            const response = await fetch('http://localhost/api/get-geometry-vietnam/commune',{
-                method: 'POST',
-                credentials: 'omit',
-                headers: {"Content-Type":'application/json'},
-                body: JSON.stringify({district_name})
-            });
-            let responseData= await response.json();
-            var path ='';
-            var commune_svg_path = '';
-            //console.log(responseData.svg_geo_communes)
-            setSvg_communes(responseData.svg_geo_communes);
-            console.log(svg_communes);
-            document.getElementById("layer_1").innerHTML = '';
-            for(var i = 0; i < svg_communes.length; i++){
-                var type = '';
-                if(svg_communes[i].type_3 === 'Commune'){
-                    type = "gold";
-                }
-                if(svg_communes[i].type_3 === 'Ward'){
-                    type = 'red';
-                }
-                if(svg_communes[i].type_3 === 'Townlet'){
-                    type = 'blue';
-                }
-                commune_svg_path+=path.concat(' <path d="',
-                svg_communes[i].st_assvg
-                ,'" id="',svg_communes[i].name_3,' " fill="',type,'"  transform="scale(15,15)"/> ');
-            }
-            document.getElementById('svg_communes').innerHTML = commune_svg_path;
-            getLabel_communes();
-            //reduce(svg_communes);
-        } catch(err) {
-            console.log(err)
-        }
-    }
 
     function showlist(a) {
         document.getElementById(a).classList.toggle('show')
     }
 
-    //_fitSelection chưa chuẩn
-    // const _fitSelection_map1 = () => Viewer2.current.fitSelection(-w, 0, w, 2000); //cho map quận
 
     const _fitSelection_map = () => {
         
         Viewer1.current.fitSelection(1450, -370, 300, 280); 
     }
-    // "102.14499664306646 -23.39273071289091 7.324432373047102 14.829399108887003" viewbox chuẩn cho map 
-
-    // function province_map_selection(xmax,xmin,ymax,ymin){
-    //     Viewer1.current.fitSelection(xmin*15, ymin*(-15), (xmax-xmin)*15, (ymax-ymin)*15); 
-    //     getSVG_provinces();
-    // }
 
     const [latitude, setLatitude] = useState();
     const [longitude, setLongitude] = useState();
@@ -844,13 +417,11 @@ const Home = () => {
       }
       
     function showPosition(position) {
-        // x.innerHTML = "Latitude: " + position.coords.latitude + 
-        // "<br>Longitude: " + position.coords.longitude;
         setLatitude(position.coords.latitude);
         setLongitude(position.coords.longitude);
         console.log("latitude: ",latitude, " longitude: ",longitude);
         var a = '';
-            var point = a.concat('<circle id="current_position" cx="',longitude*15,'" cy="',-latitude*15,'" r="',1/Math.pow(1.3,scale),'" fill="white"  stroke="black" strokeWidth="',1.5/Math.pow(1.3,scale),'" />')
+            var point = a.concat('<circle id="current_position" cx="',position.coords.longitude*15,'" cy="',-position.coords.latitude*15,'" r="',1/Math.pow(1.3,scale),'" fill="white"  stroke="black" strokeWidth="',1.5/Math.pow(1.3,scale),'" />')
             document.getElementById('position').innerHTML = point;
             console.log( document.getElementById('position'));
       }
@@ -869,35 +440,34 @@ const Home = () => {
     }
 
 
-    function findProvince(id){
-        getSVG_provinces();
-        setTimeout(()=>{
-            var a='province'
-            var object = document.getElementById(a.concat(id));
-            var x = object.getBBox().x;
-            var y = object.getBBox().y;
-            var width = object.getBBox().width;
-            var height = object.getBBox().height;
-            console.log( x, y,width,height);   
-            Viewer1.current.fitSelection(x*15-11, y*(15)-7, width*15+16, height*15+14)
+    function findProvince(name){
+        for (var i=0; i< province_bbox.length; i++){
+            if(name == province_bbox[i].name_1){
+                console.log(province_bbox[i]);
+                var x = province_bbox[i].xmin;
+                var y = province_bbox[i].ymax;
+                var width = province_bbox[i].xmax-province_bbox[i].xmin;
+                var height = province_bbox[i].ymin-province_bbox[i].ymax;
+                console.log( x, y,width,height);   
+                Viewer1.current.fitSelection(x-11, y-5, width+16, height+10)
+                break;
+            }
         }
-            ,800 )
     }
 
-    function findDistrict(id){
-        getSVG_district();
-        setTimeout(()=>{
-            var districts = document.getElementById("svg_districts");
-            var object = districts.getElementsByTagName("path")
-            //console.log(object);
-            var x = object[id].getBBox().x;
-            var y = object[id].getBBox().y;
-            var width = object[id].getBBox().width;
-            var height = object[id].getBBox().height;
-            console.log( x, y,width,height);   
-            Viewer1.current.fitSelection(x*15-2, y*(15)-1, width*15+2, height*15+2)
+    function findDistrict(name){
+        for (var i=0; i< district_bbox.length; i++){
+            if(name == district_bbox[i].name_2){
+                console.log(district_bbox[i]);
+                var x = district_bbox[i].xmin;
+                var y = district_bbox[i].ymax;
+                var width = district_bbox[i].xmax-district_bbox[i].xmin;
+                var height = district_bbox[i].ymin-district_bbox[i].ymax;
+                console.log( x, y,width,height);   
+                Viewer1.current.fitSelection(x-2, y-1.5, width+4, height+3)
+                break;
+            }
         }
-            ,800 )
     }
     
     const [search_data, setSearchData] = useState([]);
@@ -975,7 +545,7 @@ const Home = () => {
         return (
             <ul >
                 {filteredData.map((item1) => (
-                <li key={item1.id_1} onClick={()=>findProvince(item1.id_1)} >
+                <li key={item1.id_1} onClick={()=>findProvince(item1.name_1)} >
                     {/* onClick={()=>selectProvince(item1.id_1)} */}
                     {item1.name_1} 
                 </li>
@@ -989,121 +559,13 @@ const Home = () => {
             <ul >
                 {filteredData_districts.map((item1) => (
                     <li key={item1.id_2} 
-                    onClick={()=>findDistrict(item1.id_2-1)}
+                    onClick={()=>findDistrict(item1.name_2)}
                     >{item1.name_2} ({item1.name_1})
                     </li>
                 ))}
             </ul>
             )
         }
-
-    function reduce(arr){
-        var distance = [];
-        for(var z = 0; z< arr.length; z++){
-            a = arr[z].st_assvg.split(" ");
-            // console.log(a.length);
-            // console.log(a[4]-a[6]);
-            var cnt_x =0;
-            var cnt_y =0;
-            var cnt = 0;
-            var cnt_test = 0;
-            var avg_x = 0;
-            var avg_y = 0;
-            var avg= 0;
-            for (var i = 0; i < a.length;i++){
-                if (a[i] == "M" || a[i]=="L"|| a[i]=="Z"){
-                    cnt+=1;
-                    continue
-                }
-                if (102 < a[i] ){
-                    if(i< a.length-2){
-                        if(a[i+2] == "M" || a[i+2] =="L"|| a[i+2]=="Z"){
-                            cnt_test+=1;
-                        }
-                        else{
-                            avg_x= Math.pow((a[i]-a[i+2]),2);
-                            avg_y= Math.pow((a[i+1]-a[i+3]),2);
-                            avg += Math.sqrt(Math.abs(avg_x+avg_y));
-                        }
-                        cnt_x+=1;
-                    }
-                }
-                else if (a[i] <-8){
-                    cnt_y+=1;
-                }
-            }
-            distance.push(avg/cnt_x);
-        }
-        console.log(a.length)
-        // console.log("so luong x: ",cnt_x)
-        // console.log("so luong y: ",cnt_y)
-        // console.log("so luong diem chữ ",cnt)
-        // console.log("so luong diem không xet được khoảng cách: ",cnt_test)
-        // console.log("Khoang cach trung binh của layer: ",avg/cnt_x)
-        var avg_total = 0;
-        for (var x = 0; x<distance.length;x++){
-            avg_total += distance[x];
-        }
-        avg_total = avg_total/distance.length;
-        console.log("Khoang cach trung binh của layer: ",avg_total)
-        //arr_distance.push(avg/cnt_x);
-    }
-
-    function reduce(arr){
-        var total_point_reduce = 0;
-        var total_points = 0;
-        var new_arr = [];
-        var distance = [];
-        for(var z = 0; z< arr.length; z++){
-            a = arr[z].st_assvg.split(" ");
-            var cnt_x =0;
-            var cnt_y =0;
-            var cnt = 0;
-            var cnt_test = 0;
-            var cnt_points = 0;
-            var point_reduce = 0;
-            var avg_x = 0;
-            var avg_y = 0;
-            var avg= 0;
-            for (var i = 0; i < a.length;i++){
-                if (a[i] == "M" || a[i]=="L"|| a[i]=="Z" ){
-                    cnt+=1;
-                    continue
-                }
-                if (a[i] == ""){
-                    point_reduce+=1;
-                    continue
-                }
-                if (102 < a[i] ){
-                    if(i < a.length-2){
-                        if(a[i+2] == "M" || a[i+2] =="L"|| a[i+2]=="Z"){
-                            cnt_test+=1;
-                        }
-                        else{
-                            avg_x= Math.pow((a[i]-a[i+2]),2);
-                            avg_y= Math.pow((a[i+1]-a[i+3]),2);
-                            avg += Math.sqrt(Math.abs(avg_x+avg_y));
-
-                        }
-                        cnt_x+=1;
-                    }
-                    distance.push(avg/cnt_x);
-                }
-                else if (a[i] <-8){
-                    cnt_y+=1;
-                }                
-            }     
-        }
-        console.log(arr.length)
-        var avg_total = 0;
-        for (var x = 0; x<distance.length;x++){
-            avg_total += distance[x];
-        }
-        avg_total = avg_total/distance.length;
-        console.log("Khoang cach trung binh của layer: ",avg_total)
-        //arr_distance.push(avg/cnt_x);
-        return new_arr;
-    }
 
 
     function onMouseMove(event) {
@@ -1114,9 +576,6 @@ const Home = () => {
           newLine.setAttribute("y2", event.y);
         }
       }
-
-    const [screen_para, setScreen_para] = useState(null);
-
 
     function show_mode(){
         if(measure){
@@ -1136,6 +595,21 @@ const Home = () => {
         else document.getElementsByClassName('container__map')[0].style.cursor = 'default'
     }
 
+    const useViewport = () => {
+        const [width, setWidth] = React.useState(window.innerWidth);
+      
+        React.useEffect(() => {
+          const handleWindowResize = () => setWidth(window.innerWidth);
+          window.addEventListener("resize", handleWindowResize);
+          return () => window.removeEventListener("resize", handleWindowResize);
+        }, []);
+      
+        return { width };
+    };
+
+    const viewPort = useViewport()
+    
+    
     useEffect(() => { 
         _fitSelection_map();
         getSVG();
@@ -1143,56 +617,75 @@ const Home = () => {
         get_search_list_districts();
         getProvince_bbox();
         getDistrict_bbox();
-        //getSVG_commune();
-        //getSVG_provinces();
+        getCommune_bbox();
         // Run! Like go get some data from an API. run only once
     }, []);
 
     useEffect(() => { 
-        //getLayer();
-        //display_object();
-        //getLabel();
         show_mode();
-        // setTimeout(()=>{
-        // display_object()},1000)
-        // fitToViewerClick();
         // execute side effect
     })
 
   return (
     <div>
         <div id="container">
+        <div className="container__button-right">
+                <ul className="container__button-right-list">
+                    <li className="container__button-right-item"><i className="fa-solid fa-backward" id="close" onClick={() => {
+                        toogleButton()
+                        if(document.getElementsByClassName('container__button-left')[0].style.display == 'none'){
+                            console.log('a')
+                            document.getElementsByClassName('container__button-right')[0].style.marginLeft = '0%';
+                            document.getElementsByClassName('container__map')[0].style.marginLeft = '45px';
+                            document.getElementsByClassName('container__map-coordinate')[0].style.marginLeft = '10px';
+                            document.getElementsByClassName('container__map-mode')[0].style.marginLeft = '10px';
+                        }
+                        if(document.getElementsByClassName('container__button-left')[0].style.display == 'block'){
+                            document.getElementsByClassName('container__button-right')[0].style.marginLeft = '20.3%';
+                            document.getElementsByClassName('container__map')[0].style.marginLeft = '0';
+                            document.getElementsByClassName('container__map-coordinate')[0].style.marginLeft = '55px';
+                            document.getElementsByClassName('container__map-mode')[0].style.marginLeft = '55px';
+                        }
+                        
+                    }}></i></li>  
+                    <li className="container__button-right-item"><i className="fa-solid fa-location-dot" onClick={() =>getLocation()}></i></li>
+                    <li className="container__button-right-item"><i className ="fa-solid fa-ruler" onClick={()=> {
+                        SetMeasure(!measure);
+                        document.getElementById('path').removeAttribute('x1');
+                        document.getElementById('path').removeAttribute('y1');
+                        document.getElementById('path').removeAttribute('x2');
+                        document.getElementById('path').removeAttribute('y2');
+                        document.getElementById('point1').removeAttribute('cx');
+                        document.getElementById('point1').removeAttribute('cy');
+                        document.getElementById('point2').removeAttribute('cx');
+                        document.getElementById('point2').removeAttribute('cy');
+                        document.getElementById('path-distance').innerHTML = ''
+                        if(measure){
+                            document.getElementsByClassName('container__map-mode')[0].innerHTML = "Chế độ đo"
+                        }
+                        else
+                            document.getElementsByClassName('container__map-mode')[0].innerHTML = "";
+                        }}></i></li> 
+                    <li className="container__button-right-item"><i className="fa-solid fa-circle-info" onClick={()=>{info_mode()}}></i></li>
+                </ul>
+            </div>
             <div className="container__button-left" style={{width:a}} id='button-left'>
                 <ul className="container__button-left-list">
-                    <li className="container__button-left-item"  onClick={()=>showlist('map-list')}><i className="fa-solid fa-map-location-dot"> </i>  Danh sách bản đồ</li>
-                        <div id='map-list' className='map-dropdown' >
-                        </div>
                     <li className="container__button-left-item" onClick={()=>showlist('display-info' )}><i className="fa-solid fa-circle-info"> </i> Thông tin đối tượng</li>
                         <div id='display-info' className='display-info-dropdown' >
-                            <p id='location-info' onClick={()=>showlist('location-info-content')}>Vị Trí <i className="fa-solid fa-caret-down"></i>
-                            </p>
-                                <div id='location-info-content' className='dropdown-info'>
-                                </div>
                             <p id='province-info' onClick={()=>showlist('province-info-content')}>Nền hành chính Tỉnh <i className="fa-solid fa-caret-down"></i></p>
                             <div id='province-info-content' className='dropdown-info'>
                                 </div>
                             <p id='district-info' onClick={()=>showlist('district-info-content')}>Nền Hành chính Huyện <i className="fa-solid fa-caret-down"></i></p>
                             <div id='district-info-content' className='dropdown-info'>
                                 </div>
-                            {/* <p>
-                                <label htmlFor="display-tree" className='display-info'>Cây</label> 
-                                    <input type="checkbox" id="display-tree" defaultChecked={true}  onClick={()=>displayObject('display-tree','tree')}></input>
+                                <p id='commune-info' onClick={()=>showlist('commune-info-content')}>Nền Hành Chính Xã <i className="fa-solid fa-caret-down"></i>
                             </p>
-                            <p>
-                                <label htmlFor="display-house" className='display-info'>Nhà</label> 
-                                    <input type="checkbox" id="display-house" defaultChecked={true} ></input>
-                            </p>
-                            <p>
-                                <label htmlFor="display-lake" className='display-info'>Hồ</label> 
-                                    <input type="checkbox" id="display-lake" defaultChecked={true} onClick={()=>displayObject('display-lake','lake')}></input>
-                            </p> */}
-                            {/* <a href='#' id='display-lake' onClick={()=>displayLake()}>Sông</a>
-                            <a href='#' id='display-house' onClick={()=>displayHouse()}>Nhà</a> */}
+                                <div id='commune-info-content' className='dropdown-info'>
+                                </div>
+                            <p id='area-info' onClick={()=>showlist('area-info-content')}>Diện Tích <i className="fa-solid fa-caret-down"></i></p>
+                            <div id='area-info-content' className='dropdown-info'>
+                                </div>
                         </div>
                     <li className="container__button-left-item" onClick={()=>showlist('search-container')}><i className="fa-solid fa-magnifying-glass" > </i> Tìm kiếm</li>
                         <div id='search-container' className='search-container1'>
@@ -1214,62 +707,32 @@ const Home = () => {
                         </div>
                     <li className="container__button-left-item" onClick={()=>showlist('note')}><i className="fa-solid fa-book-atlas"></i> Chú giải</li>
                             <div id='note' className='note1' >
-                                <div className='note_name'>
-                                <ul id='note_province'>
-                                    <li>Thủ Đô</li>
-                                    <li><i className="fa-solid fa-rectangle"></i>Thành Phố Trực Thuộc Tỉnh</li>
-                                    <li><i className="fa-solid fa-rectangle"></i>Tỉnh</li>
-                                </ul>
-                                <ul id='note_district'>
-                                    <li><i className="fa-solid fa-rectangle"></i>Thành Phố</li>
-                                    <li><i className="fa-solid fa-rectangle"></i>Quận</li>
-                                    <li><i className="fa-solid fa-rectangle"></i>Huyện</li>
-                                    <li><i className="fa-solid fa-rectangle"></i>Thị xã</li>
-                                </ul>
+                                <div id='note-province'>
+                                    <p className='note-name'>Các đơn vị cấp tỉnh</p>
+                                    <p>Thủ Đô <i className="fa-solid fa-square" id='Thủ_đô'></i></p>
+                                    <p>Thành Phố Trực Thuộc Tỉnh<i className="fa-solid fa-square" id='Trực_Thuộc'></i></p>
+                                    <p>Tỉnh <i className="fa-solid fa-square" id='Tỉnh'></i></p>
                                 </div>
-                                <div id='note_icon'>
-                                    <i className="fa-solid fa-square" id='Thủ_đô'></i>
-                                    <i className="fa-solid fa-square" id='Trực_Thuộc'></i>
-                                    <i className="fa-solid fa-square" id='Tỉnh'></i>
-                                    <i className="fa-solid fa-square" id='Thành_Phố'></i>
-                                    <i className="fa-solid fa-square" id='Quận'></i>
-                                    <i className="fa-solid fa-square" id='Huyện'></i>
-                                    <i className="fa-solid fa-square" id='Thị_Xã'></i>
+                                <div id='note-district'>
+                                    <p className='note-name'>Các đơn vị cấp huyện</p>
+                                    <p>Thành Phố <i className="fa-solid fa-square" id='Thành_Phố'></i></p>
+                                    <p>Quận <i className="fa-solid fa-square" id='Quận'></i></p>
+                                    <p>Huyện<i className="fa-solid fa-square" id='Huyện'></i></p>
+                                    <p>Thị Xã <i className="fa-solid fa-square" id='Thị_Xã'></i></p>
+                                </div>
+                                <div id='note-commune'>
+                                    <p className='note-name'>Các đơn vị cấp xã</p>
+                                    <p>Phường <i className="fa-solid fa-square" id='Phường'></i></p>
+                                    <p>Xã<i className="fa-solid fa-square" id='Xã'></i></p>
+                                    <p>Thị Trấn <i className="fa-solid fa-square" id='Thị_Trấn'></i></p>
                                 </div>
                             </div>
                 </ul>
             </div>
-            <div className="container__button-right">
-                <ul className="container__button-right-list">
-                    <li className="container__button-right-item"><i className="fa-solid fa-backward" id="close" onClick={() => toogleButton()}></i></li>  
-                    <li className="container__button-right-item"><i className="fa-solid fa-magnifying-glass-plus" onClick={() =>getLocation()}></i></li>
-                    <li className="container__button-right-item"><i className="fa-solid fa-magnifying-glass-minus" onClick={()=> {
-                    }
-                        }></i></li>
-                    <li className="container__button-right-item"><i className ="fa-solid fa-ruler" onClick={()=> {
-                        SetMeasure(!measure);
-                        console.log(measure)
-                        document.getElementById('path').removeAttribute('x1');
-                        document.getElementById('path').removeAttribute('y1');
-                        document.getElementById('path').removeAttribute('x2');
-                        document.getElementById('path').removeAttribute('y2');
-                        document.getElementById('point1').removeAttribute('cx');
-                        document.getElementById('point1').removeAttribute('cy');
-                        document.getElementById('point2').removeAttribute('cx');
-                        document.getElementById('point2').removeAttribute('cy');
-                        document.getElementById('path-distance').innerHTML = ''
-                        if(measure){
-                            document.getElementsByClassName('container__map-mode')[0].innerHTML = "Chế độ đo"
-                        }
-                        else
-                            document.getElementsByClassName('container__map-mode')[0].innerHTML = "";
-                        }}></i></li> 
-                    <li className="container__button-right-item"><i className="fa-solid fa-circle-info" onClick={()=>{info_mode()}}></i></li>
-                </ul>
-            </div>
+  
             <div className="container__map" >
                 <UncontrolledReactSVGPanZoom  
-                    id='container__map-svg'
+                    className='container__map-svg'
                     width={900}
                     height={580}
                     ref = {Viewer1}
@@ -1285,7 +748,7 @@ const Home = () => {
                             var text = document.getElementById('path-distance')
                             text.setAttribute('x',(object.x1.animVal.value+object.x2.animVal.value)/2)
                             text.setAttribute('y',(object.y1.animVal.value+object.y2.animVal.value)/2)
-                            text.innerHTML = calcCrow(object.y1.animVal.value/15, object.x1.animVal.value/15, object.y2.animVal.value/15, object.x2.animVal.value/15) ;
+                            text.innerHTML = Math.round(calcCrow(object.y1.animVal.value/15, object.x1.animVal.value/15, object.y2.animVal.value/15, object.x2.animVal.value/15)*100)/100+'km' ;
                             console.log(object.x1.animVal.value);
                         }
                     }}
@@ -1297,21 +760,12 @@ const Home = () => {
                     scaleFactorOnWheel = {1.3}
                     onZoom = {(v)=>{
                         setScale(getBaseLog(1.3,v.a/(2.0714285714285716)));  //chỉ số a ban đầu: 2.0714285714285716   scalefactor:1.3
-                        //var a = b.concat('scale(1.3/',scale,',1.3/',scale,')'); //transform='scale(15,15)'
+                        var scale = getBaseLog(1.3,v.a/(2.0714285714285716))
                         let c= applyToPoints(inverse(v), [
                         {x: 0, y: 0},
                         {x: v.viewerWidth, y: v.viewerHeight}
                         ]);
-                        console.log('a');
-                        takeSVG_district(c);
-                        // // document.getElementById('e').innerHTML = "old_X: "+(c[0].x);
-                        // // document.getElementById('f').innerHTML = "old_Y: "+(c[0].y);
-                        // // document.getElementById('g').innerHTML = "new_X: "+(coor_x);
-                        // // document.getElementById('h').innerHTML = "new_Y: "+(coor_y);
-                        // setCoor_x(c[0].x);
-                        // setCoor_y(c[0].y);
-                        // setScreen_width(c[1].x-c[0].x);
-                        // setScreen_height(c[1].y-c[0].y);
+                        takeSVG(c,scale);
                         if(measure){
                             if(scale > 0 ){
                                 var value = 2/Math.pow(1.3,scale);
@@ -1324,55 +778,27 @@ const Home = () => {
                         }
                         console.log(scale);
                         if(document.getElementById('current_position')!=null){
-                            if(scale > 0 ){
-                                var value = 2/Math.pow(1.3,scale);
-                                document.getElementById('current_position').setAttribute('r', value);
-                                document.getElementById('current_position').setAttribute('strokeWidth', value);
-                                console.log('value:',value);
-                                console.log(document.getElementById('current_position').r.animVal.value);
-                            }
+                            var value = 2/Math.pow(1.3,scale);
+                            //document.getElementById('current_position').setAttribute('r', value);
+                            document.getElementById('current_position').setAttribute('stroke-width', value);
+                            document.getElementById('current_position').setAttribute('r', value);
+                            console.log('value:',value);
+                            console.log(document.getElementById('current_position').r.animVal.value);
                         }
-                        //console.log(a);
-                        //getLayer_onZoom();
-                        // console.log(v) 
-                    }}
-                    onMouseUp = {e => {
-                        // let c= applyToPoints(inverse(e.value), [
-                        // {x: 0, y: 0},
-                        // {x: e.value.viewerWidth, y: e.value.viewerHeight}
-                        // ]);
-                        // setScreen_para(c);
-                        // takeSVG_district(c);
-                        // console.log("x=",c[0].x," y=",c[0].y," width=",(c[1].x-c[0].x)," height=",(c[1].y-c[0].y));
-                    }
-            }        
+                    }}     
                     onPan = {event => { 
-                        //setTimeout(()=>{
                         if(event.startX == null && event.startY == null){
                             console.log(event);
-                            // setScreen_para( applyToPoints(inverse(event), [
-                            //     {x: 0, y: 0},
-                            //     {x: event.viewerWidth, y: event.viewerHeight}
-                            // ]));
+                            var scale = getBaseLog(1.3,event.a/(2.0714285714285716))
                             let c= applyToPoints(inverse(event), [
                                 {x: 0, y: 0},
                                 {x: event.viewerWidth, y: event.viewerHeight}
                                 ]);
-                            //console.log('coor_x:', screen_para[0].x,'coor_y:', screen_para[0].y, " screen width: ",screen_para[1].x-screen_para[0].x, " screen height: ",screen_para[1].y-screen_para[0].y)
-                            takeSVG_district(c)
+                            takeSVG(c,scale)
                         }
                             
                     }}
                     onClick={(event) => {
-                        // if(document.getElementById('path').x1 != 0){
-                        //     document.getElementById('path').setAttribute('x1',event.x);
-                        //     document.getElementById('path').setAttribute('y1',event.y);
-                        // }
-                        // if(document.getElementById('path').x2 != 0){
-                        //     document.getElementById('path').setAttribute('x2',event.x);
-                        //     document.getElementById('path').setAttribute('y2',event.y);
-                        // }
-                        //console.log(document.getElementById('path'))
                         let c= applyToPoints(inverse(event), [
                             {x: 0, y: 0},
                             {x: event.viewerWidth, y: event.viewerHeight}
@@ -1383,78 +809,97 @@ const Home = () => {
                             document.getElementById('path').setAttribute('y2',event.y);
                             document.getElementById('point2').setAttribute('cx',event.x);
                             document.getElementById('point2').setAttribute('cy',event.y);
-                            document.getElementById('point2').setAttribute('r',1/Math.pow(1.3,scale))
+                            document.getElementById('point2').setAttribute('r',1/Math.pow(1.3,scale));
+                            document.getElementById('path-distance').setAttribute('font-size',10/Math.pow(1.3,scale));
                             console.log(document.getElementById('path'))
                             setMeasuring(!measuring);
                             return;
                         }
                         if(measure){
-                            //var newLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                            //newLine.setAttribute('id', 'path_measure');
                             document.getElementById('path').setAttribute('x1',event.x);
                             document.getElementById('path').setAttribute('y1',event.y);
                             document.getElementById('point1').setAttribute('cx',event.x);
                             document.getElementById('point1').setAttribute('cy',event.y);
-                            document.getElementById('point1').setAttribute('r',1/Math.pow(1.3,scale))
+                            document.getElementById('point1').setAttribute('r',1/Math.pow(1.3,scale));
+                            document.getElementById('path-distance').setAttribute('font-size',10/Math.pow(1.3,scale));
                             setMeasuring(true);
                             return;
                         }
                         if(!info){
                             var district_name = '';
                             var province_name = '';
-                            var object;
+                            var commune_name = '';
+                            var area = 0;
                             //console.log('info')
-                            for (var a=0;a<district_bbox.length;a++){
-                                var xmin = district_bbox[a].xmin;
-                                var xmax = district_bbox[a].xmax;
-                                var ymin = district_bbox[a].ymin;
-                                var ymax = district_bbox[a].ymax;
-                                if((event.x>xmin)&&(event.x<xmax)&&(event.y>ymax)&&(event.y<ymin)){
-                                    district_name = district_bbox[a].name_2;
-                                    province_name = district_bbox[a].name_1;
-                                    break
+                            if(document.getElementById('svg_provinces').innerHTML != ''){
+                                console.log(event.originalEvent.target.id);
+                                console.log(document.getElementById('svg_provinces'))
+                                for (var a=0;a<province_bbox.length;a++){
+                                    var xmin = province_bbox[a].xmin;
+                                    var xmax = province_bbox[a].xmax;
+                                    var ymin = province_bbox[a].ymin;
+                                    var ymax = province_bbox[a].ymax;
+                                    if((event.x>xmin)&&(event.x<xmax)&&(event.y>ymax)&&(event.y<ymin)){
+                                        district_name = '';
+                                        province_name = province_bbox[a].name_1;
+                                        commune_name = '';
+                                        area = province_bbox[a].area;
+                                        break
+                                    }
                                 }
-                                // if(district_bbox[a].name_2 == "Hoàng Mai"){
-                                //     district_name = district_bbox[a].name_2;
-                                //     province_name = district_bbox[a].name_1;
-                                //     object = district_bbox[a]
-                                // }
                             }
-                            //console.log('tỉnh:',province_name,' Huyện: ',district_name);
-                            //console.log('x:',event.x/15,' y: ',event.y/15);
-                            var longitude = convertToDms(event.x/15);
-                            var latitude = convertToDms(event.y/15);
-                            document.getElementById('location-info-content').innerHTML = longitude+' '+latitude;
+                            if(document.getElementById('svg_districts').innerHTML != ''){
+                                console.log(event.originalEvent.target.id);
+                                console.log(document.getElementById('svg_districts'))
+                                for (var a=0;a<district_bbox.length;a++){
+                                    var xmin = district_bbox[a].xmin;
+                                    var xmax = district_bbox[a].xmax;
+                                    var ymin = district_bbox[a].ymin;
+                                    var ymax = district_bbox[a].ymax;
+                                    if((event.x>xmin)&&(event.x<xmax)&&(event.y>ymax)&&(event.y<ymin)){
+                                        district_name = district_bbox[a].name_2;
+                                        province_name = district_bbox[a].name_1;
+                                        commune_name = '';
+                                        area = district_bbox[a].area;
+                                        break
+                                    }
+                                }
+                            }
+                            if(document.getElementById('svg_communes').innerHTML != ''){
+                                console.log(event.originalEvent.target.id);
+                                console.log(document.getElementById('svg_communes'))
+                                for (var a=0;a<commune_bbox.length;a++){
+                                    var xmin = commune_bbox[a].xmin;
+                                    var xmax = commune_bbox[a].xmax;
+                                    var ymin = commune_bbox[a].ymin;
+                                    var ymax = commune_bbox[a].ymax;
+                                    if((event.x>xmin)&&(event.x<xmax)&&(event.y>ymax)&&(event.y<ymin)){
+                                        district_name = commune_bbox[a].name_2;
+                                        province_name = commune_bbox[a].name_1;
+                                        commune_name = commune_bbox[a].name_3;
+                                        area = commune_bbox[a].area;
+                                        break
+                                    }
+                                }
+                            }
+                            area = Math.round(area * 100) / 100
                             document.getElementById('province-info-content').innerHTML = province_name;
                             document.getElementById('district-info-content').innerHTML = district_name;
-                            //console.log(document.getElementById('district-info'));
+                            document.getElementById('commune-info-content').innerHTML = commune_name;
+                            document.getElementById('area-info-content').innerHTML = area+' km²';
                             return;
                         }
-                        // setX1(event.x);
-                        // setY1(event.y);
-                        // if(document.getElementById('path').x1.animVal.value == 0)
-                        //     document.getElementById('path').setAttribute('x1',event.x);
-                        //     document.getElementById('path').setAttribute('y1',event.y);
-                        //     return
-                        // // document.getElementById('path').setAttribute('x2',event.x);
-                        // // document.getElementById('path').setAttribute('y2',event.y);
-                        // if (document.getElementById('path').x1.animVal.value != 0){
-                        //     document.getElementById('path').setAttribute('x2',event.x);
-                        //     document.getElementById('path').setAttribute('y2',event.y);   
-                        // }
-                        // console.log( document.getElementById('path'));
-                        // console.log(document.getElementById('path').x1.animVal.value);
                     }}
-                    className="map2" >
+                    >
                     <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" height="280" width="300" id='svg_map'
                     viewBox="1450 -370 300 280">
                         <g id='label' transform='scale(15,15)' onClick = {(v) => console.log(v)}>
                         </g>
-                        <g id='provinces_label' transform='scale(15,15)' onClick = {(v) => console.log(v)}>
+                        <g id='provinces_label' onClick = {(v) => console.log(v)}>
                         </g>
-                        <g id='districts_label' transform='scale(15,15)' onClick = {(v) => console.log(v)}>
+                        <g id='districts_label' onClick = {(v) => console.log(v)}>
                         </g>
-                        <g id='communes_label' transform='scale(15,15)'>
+                        <g id='communes_label' >
                         </g>
                         <g id='layer_1' >
                         </g>                
@@ -1591,16 +1036,16 @@ const Home = () => {
                             </g>
                         </g>
                         <g id='svg_provinces'></g>
-                        <g id='svg_districts'  onClick={(e)=> setSVG_commune(e)}>
+                        <g id='svg_districts'>
                         </g>
                         <g id='svg_communes'>
                         </g>
                         <g id='position'></g>
                         <g id='measure' >
-                            <line id='path' strokeWidth={1.5/Math.pow(1.3,scale)}/>
+                            <line id='path' style={{fill:"green"}} strokeWidth={1.5/Math.pow(1.3,scale)}/>
                             <circle id='point1'></circle>
                             <circle id='point2'></circle>
-                            <text id='path-distance' dominantBaseline="middle" textAnchor="middle" fontSize={'10px'}></text> 
+                            <text id='path-distance' dominantBaseline="auto" textAnchor="middle" fontSize={'10px'} fill={'DarkGray'}></text> 
                         </g>
 
                         <use xlinkHref="#provinces_label" />
@@ -1628,10 +1073,6 @@ const Home = () => {
             </div>
         </div>
         <footer>
-            {/* <div class="name">
-                <p>Nguyễn Tiến Anh</p>
-            </div> */}
-
             <div className="social">
                 <i className="fa-brands fa-facebook"></i>
                 <i className="fa-solid fa-envelope"></i>
