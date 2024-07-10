@@ -1,0 +1,36 @@
+version: '3.8'  # Ensure you have the correct version
+services:
+  backend: 
+    build: 
+      dockerfile: server/Dockerfile
+    volumes: 
+      - ./server:/backend/
+    depends_on:
+      database: 
+        condition: service_healthy
+    ports:
+      - "80:80"
+  frontend: 
+    build: 
+      dockerfile: front/Dockerfile
+    volumes: 
+      - ./front:/frontend/
+    ports: 
+      - "3000:3000"
+  database: 
+    image: postgres:16.3
+    volumes:
+      - db_postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456789
+      POSTGRES_DB: rebuild
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+    ports:
+      - "5432:5432"
+volumes:
+  db_postgres:
